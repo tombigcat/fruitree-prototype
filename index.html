@@ -1,0 +1,308 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Fruitree - 培育你的果实</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@300;400;500;700&display=swap');
+        
+        * { 
+            -webkit-tap-highlight-color: transparent;
+            font-family: 'Noto Sans SC', sans-serif;
+        }
+        
+        body { 
+            background: linear-gradient(180deg, #f0fdf4 0%, #ecfdf5 50%, #f0fdf4 100%);
+            min-height: 100vh;
+        }
+        
+        /* 玻璃拟态 */
+        .glass { 
+            background: rgba(255,255,255,0.9); 
+            backdrop-filter: blur(20px); 
+            -webkit-backdrop-filter: blur(20px);
+        }
+        
+        /* 卡片阴影 */
+        .card-shadow { 
+            box-shadow: 0 4px 20px rgba(0,0,0,0.08), 0 1px 3px rgba(0,0,0,0.05);
+        }
+        
+        .card-shadow-hover {
+            box-shadow: 0 8px 30px rgba(0,0,0,0.12), 0 2px 8px rgba(0,0,0,0.08);
+        }
+        
+        /* 渐变文字 */
+        .gradient-text { 
+            background: linear-gradient(135deg, #10b981 0%, #059669 50%, #047857 100%); 
+            -webkit-background-clip: text; 
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        
+        /* 隐藏滚动条 */
+        .hide-scrollbar::-webkit-scrollbar { display: none; }
+        .hide-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+        
+        /* 页面过渡动画 */
+        .page-transition {
+            animation: pageSlide 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        
+        @keyframes pageSlide {
+            from { 
+                opacity: 0; 
+                transform: translateY(20px) scale(0.98);
+            }
+            to { 
+                opacity: 1; 
+                transform: translateY(0) scale(1);
+            }
+        }
+        
+        .page-transition-back {
+            animation: pageSlideBack 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        
+        @keyframes pageSlideBack {
+            from { 
+                opacity: 0; 
+                transform: translateX(-30px);
+            }
+            to { 
+                opacity: 1; 
+                transform: translateX(0);
+            }
+        }
+        
+        /* 心跳动画 */
+        .pulse-heart {
+            animation: pulseHeart 1.5s ease-in-out infinite;
+        }
+        
+        @keyframes pulseHeart {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.15); }
+        }
+        
+        /* 摇摆动画 */
+        .sway {
+            animation: sway 3s ease-in-out infinite;
+            transform-origin: bottom center;
+        }
+        
+        @keyframes sway {
+            0%, 100% { transform: rotate(-2deg); }
+            50% { transform: rotate(2deg); }
+        }
+        
+        /* 浮动动画 */
+        .float {
+            animation: float 3s ease-in-out infinite;
+        }
+        
+        @keyframes float {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-8px); }
+        }
+        
+        /* 闪烁动画 */
+        .shimmer {
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.4), transparent);
+            background-size: 200% 100%;
+            animation: shimmer 2s infinite;
+        }
+        
+        @keyframes shimmer {
+            0% { background-position: -200% 0; }
+            100% { background-position: 200% 0; }
+        }
+        
+        /* 水波纹效果 */
+        .ripple {
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .ripple::after {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 0;
+            height: 0;
+            border-radius: 50%;
+            background: rgba(255,255,255,0.5);
+            transform: translate(-50%, -50%);
+            transition: width 0.6s, height 0.6s;
+        }
+        
+        .ripple:active::after {
+            width: 300px;
+            height: 300px;
+        }
+        
+        /* 树的生长动画 */
+        .tree-grow {
+            animation: treeGrow 0.6s cubic-bezier(0.34, 1.56, 0.64, 1);
+        }
+        
+        @keyframes treeGrow {
+            from { transform: scale(0) rotate(-10deg); }
+            to { transform: scale(1) rotate(0); }
+        }
+        
+        /* 卡片悬停效果 */
+        .post-card {
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        
+        .post-card:hover {
+            transform: translateY(-4px);
+        }
+        
+        /* 按钮按下效果 */
+        .btn-press {
+            transition: transform 0.1s;
+        }
+        
+        .btn-press:active {
+            transform: scale(0.95);
+        }
+        
+        /* ICU 危险闪烁 */
+        .danger-pulse {
+            animation: dangerPulse 1s ease-in-out infinite;
+        }
+        
+        @keyframes dangerPulse {
+            0%, 100% { 
+                box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.4);
+                border-color: rgba(239, 68, 68, 0.3);
+            }
+            50% { 
+                box-shadow: 0 0 0 8px rgba(239, 68, 68, 0);
+                border-color: rgba(239, 68, 68, 0.6);
+            }
+        }
+        
+        /* 养料粒子效果 */
+        .nutrient-particle {
+            position: absolute;
+            width: 12px;
+            height: 12px;
+            background: linear-gradient(135deg, #fbbf24, #f59e0b);
+            border-radius: 50%;
+            pointer-events: none;
+            animation: particleFloat 1s ease-out forwards;
+        }
+        
+        @keyframes particleFloat {
+            0% {
+                opacity: 1;
+                transform: translate(0, 0) scale(1);
+            }
+            100% {
+                opacity: 0;
+                transform: translate(var(--tx), var(--ty)) scale(0.3);
+            }
+        }
+        
+        /* 底部导航栏 */
+        .tab-bar {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: rgba(255,255,255,0.95);
+            backdrop-filter: blur(20px);
+            border-top: 1px solid rgba(0,0,0,0.05);
+            z-index: 100;
+        }
+        
+        /* 浮动按钮 */
+        .fab {
+            position: fixed;
+            bottom: 90px;
+            right: 20px;
+            width: 56px;
+            height: 56px;
+            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 24px;
+            box-shadow: 0 4px 20px rgba(16, 185, 129, 0.4);
+            z-index: 99;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        
+        .fab:hover {
+            transform: scale(1.1) rotate(90deg);
+            box-shadow: 0 6px 30px rgba(16, 185, 129, 0.5);
+        }
+        
+        .fab:active {
+            transform: scale(0.95);
+        }
+        
+        /* 树形进度条 */
+        .tree-progress {
+            position: relative;
+            height: 60px;
+            background: linear-gradient(180deg, #e5e7eb 0%, #d1d5db 100%);
+            border-radius: 30px;
+            overflow: hidden;
+        }
+        
+        .tree-progress-fill {
+            position: absolute;
+            left: 0;
+            top: 0;
+            height: 100%;
+            background: linear-gradient(90deg, #34d399 0%, #10b981 50%, #059669 100%);
+            border-radius: 30px;
+            transition: width 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        
+        /* 圆形进度 */
+        .circular-progress {
+            transform: rotate(-90deg);
+        }
+        
+        .circular-progress circle {
+            transition: stroke-dashoffset 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        
+        /* 成就徽章 */
+        .badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            padding: 4px 10px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 500;
+        }
+        
+        /* 加载骨架屏 */
+        .skeleton {
+            background: linear-gradient(90deg, #f3f4f6 25%, #e5e7eb 50%, #f3f4f6 75%);
+            background-size: 200% 100%;
+            animation: shimmer 1.5s infinite;
+        }
+    </style>
+</head>
+<body class="text-gray-800">
+    <div id="app" class="max-w-md mx-auto min-h-screen relative overflow-hidden">
+        <!-- Content will be rendered here -->
+    </div>
+    
+    <script src="app.js"></script>
+</body>
+</html>
