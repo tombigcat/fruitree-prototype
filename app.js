@@ -184,7 +184,146 @@ function renderDiscover() {
 function renderProfile() {
     const myGrowing = posts.filter(p => p.author.name === currentUser.name && !p.isMature);
     const myMature = posts.filter(p => p.author.name === currentUser.name && p.isMature);
-    return `${renderHeader('profile')}<div class="pt-16 pb-24 page-transition"><div class="bg-gradient-to-b from-emerald-50 via-emerald-50/50 to-white px-4 pb-6"><div class="flex items-center gap-4 pt-4"><div class="relative"><img src="${currentUser.avatar}" class="w-20 h-20 rounded-full border-4 border-white card-shadow"><div class="absolute -bottom-1 -right-1 w-7 h-7 bg-emerald-500 rounded-full flex items-center justify-center border-2 border-white"><i class="fas fa-check text-white text-xs"></i></div></div><div class="flex-1"><h2 class="text-xl font-bold text-gray-800">${currentUser.name}</h2><p class="text-gray-500 text-sm">果树园丁 · 加入第 ${currentUser.joinDays} 天</p><div class="flex gap-2 mt-2"><span class="badge bg-emerald-100 text-emerald-600 text-xs"><i class="fas fa-leaf mr-1"></i>Lv.${Math.floor(currentUser.totalMature / 3) + 1}</span></div></div></div><div class="flex justify-around mt-6 py-4 bg-white rounded-2xl card-shadow"><div class="text-center px-4 border-r border-gray-100"><p class="text-2xl font-bold text-emerald-600">${currentUser.totalPosts}</p><p class="text-xs text-gray-500">发布作品</p></div><div class="text-center px-4 border-r border-gray-100"><p class="text-2xl font-bold text-emerald-600">${currentUser.totalMature}</p><p class="text-xs text-gray-500">已成熟</p></div><div class="text-center px-4"><p class="text-2xl font-bold text-emerald-600">${currentUser.totalGiven}</p><p class="text-xs text-gray-500">送出养料</p></div></div></div><div class="px-4"><div class="mb-6"><div class="flex items-center justify-between mb-3"><h3 class="font-bold text-gray-800 flex items-center gap-2"><i class="fas fa-seedling text-emerald-500"></i>培育中 (${myGrowing.length}/${currentUser.maxGrowing})</h3>${myGrowing.length >= currentUser.maxGrowing ? '<span class="text-xs text-orange-500 font-medium bg-orange-50 px-2 py-1 rounded-full">已达上限</span>' : ''}</div><div class="grid grid-cols-3 gap-3">${myGrowing.slice(0, 6).map(post => `<div class="aspect-square rounded-2xl overflow-hidden relative card-shadow cursor-pointer btn-press" onclick="showDetail('${post.id}')"><img src="${post.image}" class="w-full h-full object-cover"><div class="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/70 to-transparent p-2"><div class="flex items-center gap-1"><i class="fas fa-heart text-white text-xs"></i><span class="text-white text-xs font-medium">${post.nutrients}</span></div></div>${post.hoursLeft <= 6 ? '<div class="absolute top-2 right-2 w-4 h-4 bg-red-500 rounded-full animate-ping"></div><div class="absolute top-2 right-2 w-4 h-4 bg-red-500 rounded-full"></div>' : ''}<div class="absolute top-2 left-2">${renderMiniProgress(post.nutrients, post.targetNutrients)}</div></div>`).join('')}${Array(Math.max(0, 6 - myGrowing.length)).fill(0).map(() => `<div class="aspect-square rounded-2xl border-2 border-dashed border-gray-200 flex flex-col items-center justify-center text-gray-300 hover:border-emerald-300 hover:text-emerald-400 transition cursor-pointer" onclick="navigate('post')"><i class="fas fa-plus text-2xl mb-1"></i><span class="text-xs">添加</span></div>`).join('')}</div></div><div><h3 class="font-bold text-gray-800 mb-3 flex items-center gap-2"><i class="fas fa-award text-amber-500"></i>我的珍藏 (${myMature.length})</h3><div class="grid grid-cols-3 gap-3">${myMature.map(post => `<div class="aspect-square rounded-2xl overflow-hidden relative card-shadow cursor-pointer btn-press" onclick="showDetail('${post.id}')"><img src="${post.image}" class="w-full h-full object-cover"><div class="absolute inset-0 bg-gradient-to-t from-emerald-600/90 via-emerald-600/20 to-transparent flex flex-col items-center justify-end pb-3"><i class="fas fa-award text-white/90 text-lg mb-1"></i><span class="text-white text-xs font-medium">已成熟</span></div></div>`).join('')}</div>${myMature.length === 0 ? '<div class="text-center py-8 text-gray-400 bg-gray-50 rounded-2xl"><i class="fas fa-box-open text-3xl mb-2"></i><p class="text-sm">还没有成熟的珍藏</p></div>' : ''}</div><div class="mt-8"><button onclick="resetData()" class="w-full py-3 text-red-500 text-sm hover:bg-red-50 rounded-xl transition"><i class="fas fa-trash-alt mr-2"></i>重置数据</button></div></div></div>${renderTabBar('profile')}${renderFloatingButton()}`;
+    return `${renderHeader('profile')}<div class="pt-14 pb-24 page-transition">
+        <!-- 用户信息卡片 -->
+        <div class="mx-4 mb-6">
+            <div class="bg-gradient-to-br from-emerald-500 via-emerald-600 to-teal-600 rounded-3xl p-6 text-white card-shadow">
+                <div class="flex items-center gap-4 mb-5">
+                    <div class="relative">
+                        <img src="${currentUser.avatar}" class="w-20 h-20 rounded-full border-4 border-white/30 card-shadow">
+                        <div class="absolute -bottom-1 -right-1 w-8 h-8 bg-amber-400 rounded-full flex items-center justify-center border-2 border-white card-shadow">
+                            <i class="fas fa-crown text-white text-xs"></i>
+                        </div>
+                    </div>
+                    <div class="flex-1">
+                        <h2 class="text-2xl font-bold mb-1">${currentUser.name}</h2>
+                        <p class="text-emerald-100 text-sm">果树园丁 · 加入第 ${currentUser.joinDays} 天</p>
+                        <div class="flex gap-2 mt-2">
+                            <span class="bg-white/20 backdrop-blur px-3 py-1 rounded-full text-xs font-medium">
+                                <i class="fas fa-leaf mr-1"></i>Lv.${Math.floor(currentUser.totalMature / 3) + 1}
+                            </span>
+                        </div>
+                    </div>
+                </div>
+                <!-- 数据统计 -->
+                <div class="flex justify-around py-4 bg-white/10 backdrop-blur rounded-2xl">
+                    <div class="text-center">
+                        <p class="text-3xl font-bold mb-1">${currentUser.totalPosts}</p>
+                        <p class="text-xs text-emerald-100">发布作品</p>
+                    </div>
+                    <div class="text-center border-l border-white/20 pl-6">
+                        <p class="text-3xl font-bold mb-1">${currentUser.totalMature}</p>
+                        <p class="text-xs text-emerald-100">已成熟</p>
+                    </div>
+                    <div class="text-center border-l border-white/20 pl-6">
+                        <p class="text-3xl font-bold mb-1">${currentUser.totalGiven}</p>
+                        <p class="text-xs text-emerald-100">送出养料</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- 培育中 -->
+        <div class="px-4 mb-6">
+            <div class="flex items-center justify-between mb-4">
+                <h3 class="font-bold text-gray-800 flex items-center gap-2 text-lg">
+                    <i class="fas fa-seedling text-emerald-500"></i>
+                    培育中
+                    <span class="text-sm text-gray-500 font-normal">(${myGrowing.length}/${currentUser.maxGrowing})</span>
+                </h3>
+                ${myGrowing.length >= currentUser.maxGrowing ? '<span class="text-xs text-orange-500 font-medium bg-orange-50 px-3 py-1 rounded-full">已达上限</span>' : ''}
+            </div>
+            <div class="grid grid-cols-3 gap-3">
+                ${myGrowing.slice(0, 6).map(post => `
+                    <div class="aspect-square rounded-2xl overflow-hidden relative card-shadow cursor-pointer btn-press group" onclick="showDetail('${post.id}')">
+                        <img src="${post.image}" class="w-full h-full object-cover group-hover:scale-110 transition duration-500">
+                        <!-- 进度圆环 -->
+                        <div class="absolute top-2 left-2">
+                            ${renderMiniProgress(post.nutrients, post.targetNutrients)}
+                        </div>
+                        <!-- 濒危标记 -->
+                        ${post.hoursLeft <= 6 ? `
+                            <div class="absolute top-2 right-2">
+                                <div class="w-6 h-6 bg-red-500 rounded-full flex items-center justify-center animate-pulse">
+                                    <i class="fas fa-heart-crack text-white text-xs"></i>
+                                </div>
+                            </div>
+                        ` : ''}
+                        <!-- 底部信息 -->
+                        <div class="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/80 via-black/40 to-transparent p-2">
+                            <div class="flex items-center justify-between">
+                                <div class="flex items-center gap-1">
+                                    <i class="fas fa-heart text-amber-400 text-xs"></i>
+                                    <span class="text-white text-xs font-medium">${post.nutrients}</span>
+                                </div>
+                                <span class="text-white/80 text-xs">${post.hoursLeft}h</span>
+                            </div>
+                        </div>
+                    </div>
+                `).join('')}
+                ${Array(Math.max(0, 6 - myGrowing.length)).fill(0).map(() => `
+                    <div class="aspect-square rounded-2xl border-2 border-dashed border-emerald-200 bg-emerald-50/30 flex flex-col items-center justify-center text-emerald-300 hover:border-emerald-400 hover:text-emerald-500 hover:bg-emerald-50 transition cursor-pointer group" onclick="navigate('post')">
+                        <div class="w-12 h-12 rounded-full bg-emerald-100 group-hover:bg-emerald-200 flex items-center justify-center mb-2 transition">
+                            <i class="fas fa-plus text-xl"></i>
+                        </div>
+                        <span class="text-xs">添加作品</span>
+                    </div>
+                `).join('')}
+            </div>
+        </div>
+        
+        <!-- 我的珍藏 -->
+        <div class="px-4 mb-6">
+            <div class="flex items-center justify-between mb-4">
+                <h3 class="font-bold text-gray-800 flex items-center gap-2 text-lg">
+                    <i class="fas fa-award text-amber-500"></i>
+                    我的珍藏
+                    <span class="text-sm text-gray-500 font-normal">(${myMature.length})</span>
+                </h3>
+            </div>
+            ${myMature.length > 0 ? `
+                <div class="grid grid-cols-3 gap-3">
+                    ${myMature.map(post => `
+                        <div class="aspect-square rounded-2xl overflow-hidden relative card-shadow cursor-pointer btn-press group" onclick="showDetail('${post.id}')">
+                            <img src="${post.image}" class="w-full h-full object-cover group-hover:scale-110 transition duration-500">
+                            <!-- 成熟徽章 -->
+                            <div class="absolute top-2 right-2">
+                                <div class="w-6 h-6 bg-amber-400 rounded-full flex items-center justify-center card-shadow">
+                                    <i class="fas fa-crown text-white text-xs"></i>
+                                </div>
+                            </div>
+                            <!-- 底部渐变 -->
+                            <div class="absolute inset-0 bg-gradient-to-t from-amber-600/80 via-transparent to-transparent"></div>
+                            <!-- 养料数 -->
+                            <div class="absolute bottom-2 left-2 right-2 flex items-center justify-center">
+                                <span class="text-white text-xs font-medium flex items-center gap-1">
+                                    <i class="fas fa-heart"></i> ${post.nutrients}
+                                </span>
+                            </div>
+                        </div>
+                    `).join('')}
+                </div>
+            ` : `
+                <div class="text-center py-12 bg-gray-50 rounded-2xl border-2 border-dashed border-gray-200">
+                    <div class="w-16 h-16 mx-auto mb-3 rounded-full bg-amber-100 flex items-center justify-center">
+                        <i class="fas fa-award text-2xl text-amber-400"></i>
+                    </div>
+                    <p class="text-gray-500 text-sm">还没有成熟的珍藏</p>
+                    <p class="text-gray-400 text-xs mt-1">培育作品获得50养料即可珍藏</p>
+                </div>
+            `}
+        </div>
+        
+        <!-- 重置数据 -->
+        <div class="px-4">
+            <button onclick="resetData()" class="w-full py-3 text-gray-400 text-sm hover:text-red-500 hover:bg-red-50 rounded-xl transition flex items-center justify-center gap-2">
+                <i class="fas fa-rotate-left"></i>
+                重置所有数据
+            </button>
+        </div>
+    </div>
+    ${renderTabBar('profile')}
+    ${renderFloatingButton()}`;
 }
 
 function renderPost() {
